@@ -35,18 +35,18 @@
         <div class="card">
             <h2>Vanco Pre & Post Analysis</h2>
             <div class="grid">
-                <div><label>Pre Level (C7)</label><input type="number" id="C7" class="trig-1"></div>
-                <div><label>Post Level (C8)</label><input type="number" id="C8" class="trig-1"></div>
-                <div><label>Weight (C10)</label><input type="number" id="C10" class="trig-1"></div>
-                <div><label>Dose (C11)</label><input type="number" id="C11" class="trig-1"></div>
-                <div><label>Interval (C12)</label><input type="number" id="C12" class="trig-1"></div>
-                <div><label>Infusion Dur (C13)</label><input type="number" id="C13" value="1" class="trig-1"></div>
+                <div><label>Pre Level (mg/L)</label><input type="number" id="C7" class="trig-1"></div>
+                <div><label>Post Level (mg/L)</label><input type="number" id="C8" class="trig-1"></div>
+                <div><label>Weight (kg)</label><input type="number" id="C10" class="trig-1"></div>
+                <div><label>Dose (mg)</label><input type="number" id="C11" class="trig-1"></div>
+                <div><label>Interval (h)</label><input type="number" id="C12" class="trig-1"></div>
+                <div><label>Infusion Dur (h)</label><input type="number" id="C13" class="trig-1"></div>
             </div>
             <div class="section-header" style="background:#7f8c8d">Sampling Times</div>
             <div class="grid">
-                <div><label>Infusion End (C16)</label><input type="number" id="C16" class="trig-1"></div>
-                <div><label>Pre-sampling (C17)</label><input type="number" id="C17" class="trig-1"></div>
-                <div><label>Post-sampling (C18)</label><input type="number" id="C18" class="trig-1"></div>
+                <div><label>Infusion End Time</label><input type="number" id="C16" class="trig-1"></div>
+                <div><label>Pre-sampling Time</label><input type="number" id="C17" class="trig-1"></div>
+                <div><label>Post-sampling Time</label><input type="number" id="C18" class="trig-1"></div>
             </div>
 
             <div class="results-area">
@@ -104,45 +104,44 @@
         }
 
         function calculatePrePost() {
-            const C7=parseFloat(document.getElementById('C7').value), C8=parseFloat(document.getElementById('C8').value), 
-                  C10=parseFloat(document.getElementById('C10').value), C11=parseFloat(document.getElementById('C11').value),
-                  C12=parseFloat(document.getElementById('C12').value), C13=parseFloat(document.getElementById('C13').value),
-                  C16=parseFloat(document.getElementById('C16').value), C17=parseFloat(document.getElementById('C17').value), 
-                  C18=parseFloat(document.getElementById('C18').value);
+            const c7=parseFloat(document.getElementById('C7').value), c8=parseFloat(document.getElementById('C8').value), 
+                  c10=parseFloat(document.getElementById('C10').value), c11=parseFloat(document.getElementById('C11').value),
+                  c12=parseFloat(document.getElementById('C12').value), c13=parseFloat(document.getElementById('C13').value),
+                  c16=parseFloat(document.getElementById('C16').value), c17=parseFloat(document.getElementById('C17').value), 
+                  c18=parseFloat(document.getElementById('C18').value);
             
-            if(!C7 || !C8 || isNaN(C18-C17)) return;
+            if(!c7 || !c8 || isNaN(c18-c17)) return;
 
-            // Excel F7 (Ke)
-            const Ke = (Math.log(C8) - Math.log(C7)) / (C12 - (C18 - C17));
+            // 1. Ke (F7)
+            const Ke = (Math.log(c8) - Math.log(c7)) / (c12 - (c18 - c17));
             
-            // Excel F12 (Cmax) -> Using C19 (Tpost - TinfEnd)
-            const Cmax = C8 * Math.exp(Ke * (C18 - C16));
+            // 2. Cmax (F12)
+            const Cmax = c8 * Math.exp(Ke * (c18 - c16));
             
-            // Excel F13 (Cmin)
-            const Cmin = Cmax * Math.exp(-Ke * (C12 - C13));
+            // 3. Cmin (F13)
+            const Cmin = Cmax * Math.exp(-Ke * (c12 - c13));
             
-            // Excel F10/F9 (Vd)
-            const Vd_L = (C11 * (1 - Math.exp(-Ke * C13))) / (Ke * C13 * (Cmax - (Cmin * Math.exp(Ke * C13))));
-            const Vd_kg = Vd_L / C10;
+            // 4. Vd L/kg (Exactly your Excel formula)
+            // =C11*(1-EXP(-F7*C13))/(F12*C13*F7*(1-EXP(-F7*C12)))/C10
+            const Vd_kg = (c11 * (1 - Math.exp(-Ke * c13))) / (Cmax * c13 * Ke * (1 - Math.exp(-Ke * c12))) / c10;
 
-            // AUC24
-            const AUCinf = C13 * ((Cmin + Cmax) / 2);
-            const AUCelim = (Cmax - Cmin) / Ke;
-            const AUC24 = (AUCinf + AUCelim) * (24 / C12);
+            // 5. AUC24
+            const AUC24 = (((c13 * (Cmin + Cmax)/2) + ((Cmax - Cmin)/Ke)) * (24 / c12));
 
             document.getElementById('out_Ke').innerText = Ke.toFixed(4);
             document.getElementById('out_Thalf').innerText = (0.693/Ke).toFixed(2);
-            document.getElementById('out_Vdkg').innerText = Vd_kg.toFixed(3);
+            document.getElementById('out_Vdkg').innerText = Vd_kg.toFixed(2);
             document.getElementById('out_Cmax').innerText = Cmax.toFixed(2);
             document.getElementById('out_Cmin').innerText = Cmin.toFixed(2);
             document.getElementById('out_AUC').innerText = AUC24.toFixed(2);
 
             const nD=parseFloat(document.getElementById('nD').value), nT=parseFloat(document.getElementById('nT').value);
             if(nD && nT){
-                const exCx = (nD * (1 - Math.exp(-Ke * C13))) / (Vd_L * C13 * Ke * (1 - Math.exp(-Ke * nT)));
+                const Vd_L = Vd_kg * c10;
+                const exCx = (nD * (1 - Math.exp(-Ke * c13))) / (Vd_L * c13 * Ke * (1 - Math.exp(-Ke * nT)));
                 document.getElementById('eCx').innerText = exCx.toFixed(2);
-                document.getElementById('eCn').innerText = (exCx * Math.exp(-Ke * (nT - C13))).toFixed(2);
-                document.getElementById('eAu').innerText = (((nD * 24 / nT) / (C11 * 24 / C12)) * AUC24).toFixed(2);
+                document.getElementById('eCn').innerText = (exCx * Math.exp(-Ke * (nT - c13))).toFixed(2);
+                document.getElementById('eAu').innerText = (((nD * 24 / nT) / (c11 * 24 / c12)) * AUC24).toFixed(2);
             }
         }
 
