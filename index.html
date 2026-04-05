@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TDM Assist Calc</title>
+    <title>HKL TDM Assist</title>
     <style>
         :root { --primary: #2c3e50; --blue: #3498db; --green: #27ae60; --red: #e74c3c; --yellow: #fffde7; }
         body { font-family: -apple-system, sans-serif; background: #f0f2f5; padding: 0; margin: 0; color: var(--primary); }
@@ -22,7 +22,6 @@
         .res-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #eee; font-size: 0.9rem; }
         .res-val { font-weight: bold; color: #000; }
         .highlight { color: var(--blue); font-weight: bold; }
-        .btn-main { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; margin: 10px 0; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -36,18 +35,18 @@
         <div class="card">
             <h2>Vanco Pre & Post Analysis</h2>
             <div class="grid">
-                <div><label>Pre Level (mg/L)</label><input type="number" id="C7" class="trig-1"></div>
-                <div><label>Post Level (mg/L)</label><input type="number" id="C8" class="trig-1"></div>
-                <div><label>Weight (kg)</label><input type="number" id="C10" class="trig-1"></div>
-                <div><label>Dose (mg)</label><input type="number" id="C11" class="trig-1"></div>
-                <div><label>Interval (h)</label><input type="number" id="C12" class="trig-1"></div>
-                <div><label>Infusion (h)</label><input type="number" id="C13" value="1" class="trig-1"></div>
+                <div><label>Pre Level (C7)</label><input type="number" id="C7" class="trig-1"></div>
+                <div><label>Post Level (C8)</label><input type="number" id="C8" class="trig-1"></div>
+                <div><label>Weight (C10)</label><input type="number" id="C10" class="trig-1"></div>
+                <div><label>Dose (C11)</label><input type="number" id="C11" class="trig-1"></div>
+                <div><label>Interval (C12)</label><input type="number" id="C12" class="trig-1"></div>
+                <div><label>Infusion Dur (C13)</label><input type="number" id="C13" value="1" class="trig-1"></div>
             </div>
             <div class="section-header" style="background:#7f8c8d">Sampling Times</div>
             <div class="grid">
-                <div><label>Infusion End</label><input type="number" id="C16" class="trig-1"></div>
-                <div><label>Pre-Sampling</label><input type="number" id="C17" class="trig-1"></div>
-                <div><label>Post-Sampling</label><input type="number" id="C18" class="trig-1"></div>
+                <div><label>Infusion End (C16)</label><input type="number" id="C16" class="trig-1"></div>
+                <div><label>Pre-sampling (C17)</label><input type="number" id="C17" class="trig-1"></div>
+                <div><label>Post-sampling (C18)</label><input type="number" id="C18" class="trig-1"></div>
             </div>
 
             <div class="results-area">
@@ -63,23 +62,11 @@
             <div class="grid">
                 <div><label>New Dose (mg)</label><input type="number" id="nD" class="trig-1"></div>
                 <div><label>New Interval (h)</label><input type="number" id="nT" class="trig-1"></div>
-                <div><label>New Infusion (h)</label><input type="number" id="nI" value="1" class="trig-1"></div>
             </div>
             <div class="results-area" style="background:#e8f5e9;">
                 <div class="res-row"><span>Exp. Cmax</span><span class="res-val" id="eCx">---</span></div>
                 <div class="res-row"><span>Exp. Cmin</span><span class="res-val" id="eCn">---</span></div>
                 <div class="res-row"><span>Exp. AUC24</span><span class="res-val highlight" style="color:var(--green)" id="eAu">---</span></div>
-            </div>
-
-            <div class="section-header" style="background:var(--red)">Time to Withhold</div>
-            <div class="grid">
-                <div><label>Cmeas / Cmax</label><input type="number" id="Wm" placeholder="Blank=Cmax" class="trig-1"></div>
-                <div><label>Target (mg/L)</label><input type="number" id="Wt" class="trig-1"></div>
-                <div style="grid-column: span 2;"><label>Withhold Dur (h)</label><input type="number" id="Wd" class="trig-1"></div>
-            </div>
-            <div class="results-area" style="background:#fdedec;">
-                <div class="res-row"><span>Time w/h (h)</span><span class="res-val" id="whT">---</span></div>
-                <div class="res-row"><span>Exp. Cmin after w/h</span><span class="res-val highlight" id="whC">---</span></div>
             </div>
             <button style="background:#95a5a6; width:100%; padding:10px; border:none; color:white; margin-top:10px; border-radius:8px;" onclick="window.location.reload()">Reset Patient</button>
         </div>
@@ -87,7 +74,7 @@
 
     <div id="preonly" class="tab-content">
         <div class="card">
-            <h2>Vanco Pre-Only (Trough Only)</h2>
+            <h2>Vanco Pre-Only</h2>
             <div class="grid">
                 <div><label>Pre Level (mg/L)</label><input type="number" id="P_pre" class="trig-2"></div>
                 <div><label>Weight (kg)</label><input type="number" id="P_wt" class="trig-2"></div>
@@ -95,37 +82,13 @@
                 <div><label>Dose (mg)</label><input type="number" id="P_dose" class="trig-2"></div>
                 <div><label>Interval (h)</label><input type="number" id="P_tau" class="trig-2"></div>
                 <div><label>Infusion (h)</label><input type="number" id="P_tinf" value="1" class="trig-2"></div>
-                <div style="grid-column: span 2;"><label>Sampling–Dose Interval (Δt) (h)</label><input type="number" id="P_dt" class="trig-2"></div>
+                <div style="grid-column: span 2;"><label>Sampling–Dose Interval (Δt)</label><input type="number" id="P_dt" class="trig-2"></div>
             </div>
             <div class="results-area">
                 <div class="res-row"><span>Ke (h⁻¹)</span><span class="res-val" id="po_Ke">---</span></div>
-                <div class="res-row"><span>t½ (h)</span><span class="res-val" id="po_Th">---</span></div>
                 <div class="res-row"><span>Cmax (Bolus)</span><span class="res-val" id="po_Cx">---</span></div>
                 <div class="res-row"><span>AUC24</span><span class="res-val highlight" id="po_Au">---</span></div>
             </div>
-
-            <div class="section-header" style="background:var(--green)">New Dose Adjustment</div>
-            <div class="grid">
-                <div><label>New Dose (mg)</label><input type="number" id="pn_dose" class="trig-2"></div>
-                <div><label>New Interval (h)</label><input type="number" id="pn_tau" class="trig-2"></div>
-                <div><label>Target Cmin</label><input type="number" id="pn_target" placeholder="e.g. 15" class="trig-2"></div>
-            </div>
-            <div class="results-area" style="background:#e8f5e9;">
-                <div class="res-row"><span>Exp. Cmax</span><span class="res-val" id="po_ExpCx">---</span></div>
-                <div class="res-row"><span>Exp. Cmin</span><span class="res-val" id="po_ExpCn">---</span></div>
-                <div class="res-row"><span>Exp. AUC24</span><span class="res-val highlight" style="color:var(--green)" id="po_ExpAu">---</span></div>
-                <div class="res-row"><span>Rec. Dose for Target</span><span class="res-val" style="color:var(--green)" id="po_RecDs">---</span></div>
-            </div>
-
-            <div class="section-header" style="background:var(--red)">Time to Withhold</div>
-            <div class="grid">
-                <div><label>Cmeas / Cmax</label><input type="number" id="P_mw" placeholder="Blank=Cmax" class="trig-2"></div>
-                <div><label>Target (mg/L)</label><input type="number" id="P_tw" class="trig-2"></div>
-            </div>
-            <div class="results-area" style="background:#fdedec;">
-                <div class="res-row"><span>T w/h (h)</span><span class="res-val highlight" id="po_wh">---</span></div>
-            </div>
-            <button style="background:#95a5a6; width:100%; padding:10px; border:none; color:white; margin-top:10px; border-radius:8px;" onclick="window.location.reload()">Reset Patient</button>
         </div>
     </div>
 
@@ -141,39 +104,46 @@
         }
 
         function calculatePrePost() {
-            const c7=parseFloat(document.getElementById('C7').value), c8=parseFloat(document.getElementById('C8').value), 
-                  c10=parseFloat(document.getElementById('C10').value), c11=parseFloat(document.getElementById('C11').value),
-                  c12=parseFloat(document.getElementById('C12').value), c13=parseFloat(document.getElementById('C13').value),
-                  c16=parseFloat(document.getElementById('C16').value), c17=parseFloat(document.getElementById('C17').value), 
-                  c18=parseFloat(document.getElementById('C18').value);
+            const C7=parseFloat(document.getElementById('C7').value), C8=parseFloat(document.getElementById('C8').value), 
+                  C10=parseFloat(document.getElementById('C10').value), C11=parseFloat(document.getElementById('C11').value),
+                  C12=parseFloat(document.getElementById('C12').value), C13=parseFloat(document.getElementById('C13').value),
+                  C16=parseFloat(document.getElementById('C16').value), C17=parseFloat(document.getElementById('C17').value), 
+                  C18=parseFloat(document.getElementById('C18').value);
             
-            if(!c7 || !c8 || isNaN(c18-c17)) return;
+            if(!C7 || !C8 || isNaN(C18-C17)) return;
 
-            const Ke = (Math.log(c8) - Math.log(c7)) / (c12 - (c18 - c17));
-            const Cmax = c8 * Math.exp(Ke * (c18 - c16));
-            const Cmin = Cmax * Math.exp(-Ke * (c12 - c13));
-            const Vdkg = (c11 * (1 - Math.exp(-Ke * c13))) / (c10 * Cmax * c13 * Ke * (1 - Math.exp(-Ke * c12)));
-            const AUC24 = (((c13 * (Cmin + Cmax)/2) + ((Cmax - Cmin)/Ke)) * (24 / c12));
+            // Excel F7 (Ke)
+            const Ke = (Math.log(C8) - Math.log(C7)) / (C12 - (C18 - C17));
+            
+            // Excel F12 (Cmax) -> Using C19 (Tpost - TinfEnd)
+            const Cmax = C8 * Math.exp(Ke * (C18 - C16));
+            
+            // Excel F13 (Cmin)
+            const Cmin = Cmax * Math.exp(-Ke * (C12 - C13));
+            
+            // Excel F10/F9 (Vd)
+            const Vd_L = (C11 * (1 - Math.exp(-Ke * C13))) / (Ke * C13 * (Cmax - (Cmin * Math.exp(Ke * C13))));
+            const Vd_kg = Vd_L / C10;
+
+            // AUC24
+            const AUCinf = C13 * ((Cmin + Cmax) / 2);
+            const AUCelim = (Cmax - Cmin) / Ke;
+            const AUC24 = (AUCinf + AUCelim) * (24 / C12);
 
             document.getElementById('out_Ke').innerText = Ke.toFixed(4);
             document.getElementById('out_Thalf').innerText = (0.693/Ke).toFixed(2);
-            document.getElementById('out_Vdkg').innerText = Vdkg.toFixed(3);
+            document.getElementById('out_Vdkg').innerText = Vd_kg.toFixed(3);
             document.getElementById('out_Cmax').innerText = Cmax.toFixed(2);
             document.getElementById('out_Cmin').innerText = Cmin.toFixed(2);
-            document.getElementById('out_AUC').innerText = AUC24.toFixed(1);
+            document.getElementById('out_AUC').innerText = AUC24.toFixed(2);
 
-            const nD=parseFloat(document.getElementById('nD').value), nT=parseFloat(document.getElementById('nT').value), nI=parseFloat(document.getElementById('nI').value);
+            const nD=parseFloat(document.getElementById('nD').value), nT=parseFloat(document.getElementById('nT').value);
             if(nD && nT){
-                const exCx = (nD * (1 - Math.exp(-Ke * nI))) / (Vdkg * c10 * nI * Ke * (1 - Math.exp(-Ke * nT)));
+                const exCx = (nD * (1 - Math.exp(-Ke * C13))) / (Vd_L * C13 * Ke * (1 - Math.exp(-Ke * nT)));
                 document.getElementById('eCx').innerText = exCx.toFixed(2);
-                document.getElementById('eCn').innerText = (exCx * Math.exp(-Ke * (nT - nI))).toFixed(2);
-                document.getElementById('eAu').innerText = (((nD * 24 / nT) / (c11 * 24 / c12)) * AUC24).toFixed(1);
+                document.getElementById('eCn').innerText = (exCx * Math.exp(-Ke * (nT - C13))).toFixed(2);
+                document.getElementById('eAu').innerText = (((nD * 24 / nT) / (C11 * 24 / C12)) * AUC24).toFixed(2);
             }
-
-            const WmIn=parseFloat(document.getElementById('Wm').value), Wt=parseFloat(document.getElementById('Wt').value), Wd=parseFloat(document.getElementById('Wd').value);
-            const Wm = !isNaN(WmIn) ? WmIn : Cmax;
-            if(Wm && Wt) document.getElementById('whT').innerText = ((Math.log(Wm)-Math.log(Wt))/Ke).toFixed(2);
-            if(Wm && Wd) document.getElementById('whC').innerText = (Wm*Math.exp(-Ke*Wd)).toFixed(2);
         }
 
         function calculatePreOnly() {
@@ -182,39 +152,14 @@
                   tu=parseFloat(document.getElementById('P_tau').value), ti=parseFloat(document.getElementById('P_tinf').value),
                   dt=parseFloat(document.getElementById('P_dt').value);
 
-            if(!cp || !ds || !tu || !vk || !bw) return;
+            if(!cp || !ds || !tu) return;
             const Cx = cp + (ds / (vk * bw));
             const Ke = (Math.log(Cx) - Math.log(cp)) / (tu - dt);
             const AUC24 = (((ti * (cp + Cx)/2) + ((Cx - cp)/Ke)) * (24 / tu));
 
             document.getElementById('po_Ke').innerText = Ke.toFixed(4);
-            document.getElementById('po_Th').innerText = (0.693/Ke).toFixed(2);
             document.getElementById('po_Cx').innerText = Cx.toFixed(2);
-            document.getElementById('po_Au').innerText = AUC24.toFixed(1);
-
-            // ADJUSTMENT FOR PRE-ONLY
-            const pnd = parseFloat(document.getElementById('pn_dose').value);
-            const pnt = parseFloat(document.getElementById('pn_tau').value);
-            const target = parseFloat(document.getElementById('pn_target').value);
-
-            if(pnd && pnt) {
-                const exCx = (pnd * (1 - Math.exp(-Ke * ti))) / (vk * bw * ti * Ke * (1 - Math.exp(-Ke * pnt)));
-                const exCn = exCx * Math.exp(-Ke * (pnt - ti));
-                const exAu = ((pnd * 24 / pnt) / (ds * 24 / tu)) * AUC24;
-
-                document.getElementById('po_ExpCx').innerText = exCx.toFixed(2);
-                document.getElementById('po_ExpCn').innerText = exCn.toFixed(2);
-                document.getElementById('po_ExpAu').innerText = exAu.toFixed(1);
-
-                if(target) {
-                    const rec = (target * (vk * bw) * ti * Ke * (1 - Math.exp(-Ke * pnt))) / ((1 - Math.exp(-Ke * ti)) * Math.exp(-Ke * (pnt - ti)));
-                    document.getElementById('po_RecDs').innerText = Math.round(rec) + " mg";
-                }
-            }
-
-            const pmIn=parseFloat(document.getElementById('P_mw').value), tw=parseFloat(document.getElementById('P_tw').value);
-            const pm = !isNaN(pmIn) ? pmIn : Cx;
-            if(pm && tw) document.getElementById('po_wh').innerText = ((Math.log(pm)-Math.log(tw))/Ke).toFixed(2);
+            document.getElementById('po_Au').innerText = AUC24.toFixed(2);
         }
 
         document.querySelectorAll('.trig-1').forEach(el => el.addEventListener('input', calculatePrePost));
