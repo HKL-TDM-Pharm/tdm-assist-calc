@@ -62,11 +62,12 @@
             <div class="grid">
                 <div><label>New Dose (mg)</label><input type="number" id="nD" class="trig-1"></div>
                 <div><label>New Interval (h)</label><input type="number" id="nT" class="trig-1"></div>
+                <div style="grid-column: span 2;"><label>New Infusion duration (h)</label><input type="number" id="nI" class="trig-1" value="1"></div>
             </div>
             <div class="results-area" style="background:#e8f5e9;">
-                <div class="res-row"><span>Exp. Cmax</span><span class="res-val" id="eCx">---</span></div>
-                <div class="res-row"><span>Exp. Cmin</span><span class="res-val" id="eCn">---</span></div>
-                <div class="res-row"><span>Exp. AUC24</span><span class="res-val highlight" style="color:var(--green)" id="eAu">---</span></div>
+                <div class="res-row"><span>Exp. Cmax (mg/L)</span><span class="res-val" id="eCx">---</span></div>
+                <div class="res-row"><span>Exp. Cmin (mg/L)</span><span class="res-val" id="eCn">---</span></div>
+                <div class="res-row"><span>Exp. AUC24 (mg.h/L)</span><span class="res-val highlight" style="color:var(--green)" id="eAu">---</span></div>
             </div>
 
             <div class="section-header" style="background:var(--red)">Time to Withhold</div>
@@ -105,7 +106,8 @@
             <div class="grid">
                 <div><label>New Dose (mg)</label><input type="number" id="pn_dose" class="trig-2"></div>
                 <div><label>New Interval (h)</label><input type="number" id="pn_tau" class="trig-2"></div>
-                <div><label>Target Cmin</label><input type="number" id="pn_target" placeholder="e.g. 15" class="trig-2"></div>
+                <div style="grid-column: span 2;"><label>New Infusion duration (h)</label><input type="number" id="pn_inf" class="trig-2" value="1"></div>
+                <div style="grid-column: span 2;"><label>Target Cmin</label><input type="number" id="pn_target" placeholder="e.g. 15" class="trig-2"></div>
             </div>
             <div class="results-area" style="background:#e8f5e9;">
                 <div class="res-row"><span>Exp. Cmax</span><span class="res-val" id="po_ExpCx">---</span></div>
@@ -150,7 +152,6 @@
             const Cmax = c8 * Math.exp(Ke * (c18 - c16));
             const Cmin = Cmax * Math.exp(-Ke * (c12 - c13));
             
-            // Your exact Excel formula for Vd L/kg
             const Vd_kg = (c11 * (1 - Math.exp(-Ke * c13))) / (Cmax * c13 * Ke * (1 - Math.exp(-Ke * c12))) / c10;
             const Vd_L = Vd_kg * c10;
 
@@ -163,12 +164,16 @@
             document.getElementById('out_Cmin').innerText = Cmin.toFixed(2);
             document.getElementById('out_AUC').innerText = AUC24.toFixed(2);
 
-            const nD=parseFloat(document.getElementById('nD').value), nT=parseFloat(document.getElementById('nT').value);
-            if(nD && nT){
-                const exCx = (nD * (1 - Math.exp(-Ke * c13))) / (Vd_L * c13 * Ke * (1 - Math.exp(-Ke * nT)));
+            // Adjustment using your provided Excel formulas
+            const nD=parseFloat(document.getElementById('nD').value), nT=parseFloat(document.getElementById('nT').value), nI=parseFloat(document.getElementById('nI').value);
+            if(nD && nT && nI){
+                const exCx = (nD / (Vd_L * Ke * nI)) * ((1 - Math.exp(-Ke * nI)) / (1 - Math.exp(-Ke * nT)));
+                const exCn = exCx * Math.exp(-Ke * (nT - nI));
+                const exAu = ((nD * 24 / nT) / (c11 * 24 / c12)) * AUC24;
+
                 document.getElementById('eCx').innerText = exCx.toFixed(2);
-                document.getElementById('eCn').innerText = (exCx * Math.exp(-Ke * (nT - c13))).toFixed(2);
-                document.getElementById('eAu').innerText = (((nD * 24 / nT) / (c11 * 24 / c12)) * AUC24).toFixed(2);
+                document.getElementById('eCn').innerText = exCn.toFixed(2);
+                document.getElementById('eAu').innerText = exAu.toFixed(2);
             }
 
             const WmIn=parseFloat(document.getElementById('Wm').value), Wt=parseFloat(document.getElementById('Wt').value), Wd=parseFloat(document.getElementById('Wd').value);
@@ -194,17 +199,18 @@
 
             const pnd = parseFloat(document.getElementById('pn_dose').value);
             const pnt = parseFloat(document.getElementById('pn_tau').value);
+            const pni = parseFloat(document.getElementById('pn_inf').value);
             const target = parseFloat(document.getElementById('pn_target').value);
 
-            if(pnd && pnt) {
-                const exCx = (pnd * (1 - Math.exp(-Ke * ti))) / (vk * bw * ti * Ke * (1 - Math.exp(-Ke * pnt)));
-                const exCn = exCx * Math.exp(-Ke * (pnt - ti));
+            if(pnd && pnt && pni) {
+                const exCx = (pnd / (vk * bw * Ke * pni)) * ((1 - Math.exp(-Ke * pni)) / (1 - Math.exp(-Ke * pnt)));
+                const exCn = exCx * Math.exp(-Ke * (pnt - pni));
                 const exAu = ((pnd * 24 / pnt) / (ds * 24 / tu)) * AUC24;
                 document.getElementById('po_ExpCx').innerText = exCx.toFixed(2);
                 document.getElementById('po_ExpCn').innerText = exCn.toFixed(2);
                 document.getElementById('po_ExpAu').innerText = exAu.toFixed(2);
                 if(target) {
-                    const rec = (target * (vk * bw) * ti * Ke * (1 - Math.exp(-Ke * pnt))) / ((1 - Math.exp(-Ke * ti)) * Math.exp(-Ke * (pnt - ti)));
+                    const rec = (target * (vk * bw) * pni * Ke * (1 - Math.exp(-Ke * pnt))) / ((1 - Math.exp(-Ke * pni)) * Math.exp(-Ke * (pnt - pni)));
                     document.getElementById('po_RecDs').innerText = Math.round(rec) + " mg";
                 }
             }
